@@ -1,0 +1,27 @@
+# Managed by nature-skills scripts/update-codex-skills.sh
+# source=/Users/mac/Desktop/lqx/.agents/skills/nature-skills
+# commit=233ed09957d32d8cf45dd96c495663c5c5d8e447
+# updated_at=2026-10-21T01:17:34+0800
+nature-academic-search
+nature-citation
+nature-data
+nature-downloader
+nature-experiment-log
+nature-figure
+nature-image2ppt
+nature-literature-pipeline
+nature-paper-card
+nature-paper-to-patent
+nature-paper-trans
+nature-paper-xray
+nature-paper2ppt
+nature-polishing
+nature-proposal-writer
+nature-reader
+nature-ref-verifier
+nature-response
+nature-reviewer
+nature-shared
+nature-social-science
+nature-statistics
+nature-writing

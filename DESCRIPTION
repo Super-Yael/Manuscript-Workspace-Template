@@ -1,0 +1,6 @@
+Package: manuscriptworkspace
+Title: Reusable Manuscript Analysis Workspace
+Version: 0.1.0
+Authors@R: person("Your", "Name", role = c("aut", "cre"), email = "you@example.org")
+Description: Project dependency manifest for a function-oriented manuscript workflow.
+Encoding: UTF-8

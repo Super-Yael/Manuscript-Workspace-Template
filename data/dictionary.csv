@@ -1,0 +1,4 @@
+field,type,unit,description,missing_rule
+sample_id,character,none,Unique synthetic sample identifier,not allowed in example
+group,character,none,Control or Treatment,not allowed in example
+outcome,numeric,arbitrary units,Synthetic outcome with no clinical meaning,not allowed in example
