@@ -1,3 +1,3 @@
 interface:
   display_name: "Entrez"
-  short_description: "Help with Entrez tasks and workflows"
+  short_description: "Search PubMed and retrieve NCBI records"

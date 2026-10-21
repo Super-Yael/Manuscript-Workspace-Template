@@ -8,7 +8,8 @@
 - 原始数据按来源保存在 data/raw/，不覆盖；派生数据写 data/derived/。记录字典、来源和访问权限。
 - data/derived/、analysis/results/、figures/generated/、manuscript/generated/、manuscript/build/、submission/generated/ 专用于可重建输出，不保存手工材料。
 - 正文数字和表格从分析结果导出，不手工抄写。需要时添加 manuscript/export-results.R。
-- 配置与代码先随功能保存，确需共享时再提取。出现外部 R 依赖时再引入 renv，记录种子与会话信息，不预装无关包。
+- 可配置项及说明集中在 .env.example，实际值放不入库的 .env；不在代码中写密钥或项目专属配置。出现外部 R 依赖时再引入 renv，记录种子与会话信息，不预装无关包。
+- 文献按实际章节建目录，每个论点在章节 README 记录高级检索式并保存独立且含摘要的 .bib。引用优先使用 DOI 键，无 DOI 用 PMID。reference.bib 自动按正文引用筛选构建，同键异文或无法确认的重复立即报错。
 - 文献检索、格式和输出位置只按 manuscript/references/README.md 维护。通用 skill 不承载项目目录或研究规则，按任务需要加载。
 - 不编造结论、文献或作者声明。未知事项由作者补充。
 - 改代码后运行 make test check；必要测试随实际功能添加。修改正文或图表后检查实际 PDF；纯文字编辑不增加测试。

@@ -11,6 +11,7 @@
 │   └── references/         文献检索与引用约定
 ├── submission/             投稿与返修材料
 ├── .agents/skills/         已安装的通用技能
+├── .env.example            配置项与默认值
 ├── Makefile                可选流程入口
 └── AGENTS.md               协作约定
 ```
@@ -18,6 +19,12 @@
 每个功能目录只保留必要说明。没有演示数据、示例论文、预设分析方法或空的依赖锁文件；原始数据、脚本、正文与输出子目录在实际使用时建立。
 
 ## 使用
+
+所有可配置项集中在 .env.example。先复制为 .env，填写工具路径和 NCBI 配置；.env 已被 Git 忽略，未复制时使用模板默认值。
+
+```sh
+cp .env.example .env
+```
 
 所有命令从仓库根目录运行：
 
@@ -31,6 +38,8 @@ Makefile 识别以下可选入口，文件缺失或内容为空时打印 SKIP，
 
 | 命令 | 入口 |
 | --- | --- |
+| make references | 按各章节 README 的高级检索式生成每个论点的 .bib，无检索式则跳过 |
+| make bibliography | 按正文引用从各 .bib 筛选、检查冲突并生成 reference.bib |
 | make data | data/prepare.R |
 | make analysis | 上游数据步骤，再运行 analysis/run.R |
 | make figures | 上游分析步骤，再运行 figures/render.R |
@@ -48,8 +57,8 @@ Makefile 识别以下可选入口，文件缺失或内容为空时打印 SKIP，
 
 在独立仓库使用此模板，先在 manuscript/ 记录研究问题与分析计划，再按实际任务添加数据、分析与正文。代码放在它服务的功能目录，不按 R、Python、LaTeX 分目录。
 
-出现外部 R 包依赖时再初始化 renv 并提交真实的 renv.lock；记录随机种子和会话信息。配置先随相应功能保存，确有多个步骤共享时再提取。
+出现外部 R 包依赖时再初始化 renv 并提交真实的 renv.lock；记录随机种子和会话信息。可配置项统一维护在 .env.example，实际值放 .env。
 
-文献检索、输出格式和保存位置统一见 manuscript/references/README.md。通用 skill 不保存某篇论文的路径与规则。
+文献按章节建立目录，每个论点在章节 README 中记录高级检索式、保存一个含摘要的 .bib；编译前自动生成仅包含正文引用的 reference.bib，引用键冲突即停止。具体格式与保存位置统一见 manuscript/references/README.md。通用 skill 不保存某篇论文的路径与规则。
 
-生成物默认忽略；原始数据的入库与共享按实际权限决定。投稿和打包方案在有真实材料后确定。make clean 只删除 data/derived/、analysis/results/、figures/generated/、manuscript/generated/、manuscript/build/ 和 submission/generated/，不要在这些位置保存手工材料。
+生成物默认忽略；原始数据的入库与共享按实际权限决定。投稿和打包方案在有真实材料后确定。make clean 只删除 data/derived/、analysis/results/、figures/generated/、manuscript/generated/、manuscript/build/ 和 submission/generated/，并删除自动生成的 reference.bib；各论点的 .bib 会保留。不要在这些位置保存手工材料。

@@ -16,3 +16,6 @@ figures/generated/
 manuscript/generated/
 manuscript/build/
 submission/generated/
+
+__pycache__/
+*.py[cod]
