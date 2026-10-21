@@ -1,68 +1,65 @@
-# Public workflow interface; run from the repository root.
+# 所有命令从仓库根目录执行；入口不存在或为空时跳过。
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 .DELETE_ON_ERROR:
-MAKEFLAGS += --no-builtin-rules --warn-undefined-variables
 
 RSCRIPT ?= Rscript
 LATEXMK ?= latexmk
-R = $(RSCRIPT) --vanilla
-SETTINGS = config/project.R workflow/common.R
-ANALYSIS_CODE = analysis/run.R data/prepare.R $(SETTINGS)
+LATEX_MODE ?= -pdf
 
-.PHONY: help doctor data analysis figures manuscript all check test bundle clean restore snapshot
+# 只跳过未实现的步骤；工具缺失和脚本错误必须报错。
+define run_r
+	@if [ -s "$(1)" ]; then \
+		command -v "$(RSCRIPT)" >/dev/null || { echo 'ERROR: 找不到 $(RSCRIPT)'; exit 1; }; \
+		"$(RSCRIPT)" "$(1)"; \
+	else \
+		echo 'SKIP: $(1) 尚未添加内容'; \
+	fi
+endef
+
+.PHONY: help all data analysis figures manuscript test check bundle clean
 help:
-	@echo 'make doctor      Check R and LaTeX tools'
-	@echo 'make data        Validate and prepare source data'
-	@echo 'make analysis    Calculate results and record R environment'
-	@echo 'make figures     Generate the example figure'
-	@echo 'make manuscript  Build manuscript/build/main.pdf'
-	@echo 'make check       Build and validate the complete workflow'
-	@echo 'make test        Check validation and descriptive calculations'
-	@echo 'make bundle      Package PDF, sources, inputs and provenance'
-	@echo 'make restore     Restore R dependencies with renv (network)'
-	@echo 'make snapshot    Record dependencies declared in DESCRIPTION'
-	@echo 'make clean       Remove generated files, preserve inputs and sources'
-
-doctor:
-	@command -v $(RSCRIPT) >/dev/null || { echo 'Rscript is required'; exit 1; }
-	@command -v $(LATEXMK) >/dev/null || { echo 'latexmk is required'; exit 1; }
-	@command -v pdflatex >/dev/null || { echo 'pdflatex is required'; exit 1; }
-	@$(R) -e 'cat(R.version.string, "\n")'
-	@$(LATEXMK) -v | head -4
-
-data: data/derived/measurements.csv
-data/derived/measurements.csv: data/raw/example.csv data/prepare.R $(SETTINGS) renv.lock
-	$(R) data/prepare.R
-
-analysis: analysis/results/summary.rds analysis/results/session-info.txt
-analysis/results/summary.rds: data/derived/measurements.csv $(ANALYSIS_CODE)
-	$(R) analysis/run.R
-analysis/results/session-info.txt: analysis/results/summary.rds workflow/session.R renv.lock
-	$(R) workflow/session.R
-
-figures: figures/generated/outcome.pdf
-figures/generated/outcome.pdf: analysis/results/summary.rds figures/render.R $(SETTINGS)
-	$(R) figures/render.R
-
-manuscript/generated/results.tex: analysis/results/summary.rds manuscript/export-results.R $(SETTINGS)
-	$(R) manuscript/export-results.R
-
-# latexmk tracks all TeX, BibTeX and figure inputs itself and skips unchanged work.
-manuscript: figures manuscript/generated/results.tex analysis/results/session-info.txt
-	mkdir -p manuscript/build
-	$(LATEXMK) -pdf -interaction=nonstopmode -halt-on-error -file-line-error -outdir=manuscript/build manuscript/main.tex
+	@echo 'make all         按顺序运行已有的数据、分析、图表和论文步骤'
+	@echo 'make data        可选入口 data/prepare.R'
+	@echo 'make analysis    可选入口 analysis/run.R'
+	@echo 'make figures     可选入口 figures/render.R'
+	@echo 'make manuscript  可选入口 manuscript/export-results.R 和 main.tex'
+	@echo 'make test        可选入口 analysis/test.R'
+	@echo 'make check       构建后运行可选入口 analysis/check.R'
+	@echo 'make bundle      校验后运行可选入口 submission/package.R'
+	@echo 'make clean       仅清理约定的自动生成目录'
 
 all: manuscript
-check: manuscript
-	$(R) workflow/check.R
+
+data:
+	$(call run_r,data/prepare.R)
+
+analysis: data
+	$(call run_r,analysis/run.R)
+
+figures: analysis
+	$(call run_r,figures/render.R)
+
+manuscript: figures
+	$(call run_r,manuscript/export-results.R)
+	@if [ -s manuscript/main.tex ]; then \
+		command -v "$(LATEXMK)" >/dev/null || { echo 'ERROR: 找不到 $(LATEXMK)'; exit 1; }; \
+		mkdir -p manuscript/build; \
+		"$(LATEXMK)" $(LATEX_MODE) -interaction=nonstopmode -halt-on-error -file-line-error -outdir=manuscript/build manuscript/main.tex; \
+	else \
+		echo 'SKIP: manuscript/main.tex 尚未添加内容'; \
+	fi
+
 test:
-	$(R) tests/test-pipeline.R
+	$(call run_r,analysis/test.R)
+
+check: manuscript
+	$(call run_r,analysis/check.R)
+
 bundle: check
-	$(R) submission/package.R
-restore:
-	$(R) workflow/environment.R restore
-snapshot:
-	$(R) workflow/environment.R snapshot
+	$(call run_r,submission/package.R)
+
 clean:
-	$(R) workflow/clean.R
+	@for dir in data/derived analysis/results figures/generated manuscript/generated manuscript/build submission/generated; do \
+		if [ -d "$$dir" ]; then rm -rf -- "$$dir"; echo "CLEAN: $$dir"; fi; \
+	done

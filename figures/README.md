@@ -1,5 +1,5 @@
-# 图表制作
+# 图表
 
-运行 make figures。render.R 从分析结果读取数据，生成 generated/outcome.pdf，正文直接引用矢量 PDF。图中的每个点是虚构样本，横线是组均值。
+保存图表制作代码，读取分析输出；图注放在论文中。
 
-统一在绘图脚本中维护颜色、尺寸、字体和标签。新图按语义命名，例如 primary-outcome.pdf；图注及正文引用放 manuscript/sections/。正文表格由 manuscript/export-results.R 生成。多图时在 Makefile 中分别声明依赖，避免修改一张图就重跑全部分析。
+需要自动绘图时添加 render.R，运行 make figures。导出的图写 generated/，按用途命名，尺寸和格式按目标期刊确定。脚本不存在时跳过，不提前创建示例图。

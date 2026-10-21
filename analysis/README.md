@@ -1,7 +1,7 @@
-# 统计分析
+# 分析
 
-运行 make analysis。run.R 读取整理数据，输出 results/summary.rds；session-info.txt 记录 R、平台、已加载包、随机种子和原始输入 MD5。
+保存统计方法、模型诊断和敏感性分析。分析计划与研究问题保持一致，不预设检验或模型。
 
-示例只计算各组样本量、均值、样本标准差、中位数及范围，不做假设检验。summary.rds 同时保存示例观测值供绘图使用。原始编号按独立样本解释，不能直接套用于配对或重复测量设计。
+需要时添加 run.R，运行 make analysis。可重建结果写 results/。必要的测试放 test.R，结果校验放 check.R，分别由 make test 和 make check 调用。
 
-新研究将建模、诊断和敏感性分析按实际问题拆成此目录内的脚本；在 Makefile 中声明各结果依赖。图形风格放 figures/，论文表格和文字数字的 TeX 导出放 manuscript/，不在分析里拼接正文。
+外部 R 包、随机种子和环境信息随实际分析记录；需要固定环境时再引入 renv。

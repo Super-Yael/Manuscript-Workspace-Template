@@ -1,6 +1,0 @@
-if (!file.exists("config/project.R")) stop("Run commands from the project root.")
-if (file.exists("renv/activate.R")) source("renv/activate.R")
-source("config/project.R")
-set.seed(project$seed)
-options(stringsAsFactors = FALSE, warn = 1)
-ensure_parent <- function(path) dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)

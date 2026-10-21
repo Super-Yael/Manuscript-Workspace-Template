@@ -1,4 +1,0 @@
-{
-  "snapshot.type": "explicit",
-  "ignored.directories": [".agents", "data", "submission/generated", "manuscript/build"]
-}
